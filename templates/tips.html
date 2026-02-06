@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Tips & Resources - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-lightbulb"></i> Resume Tips & Best Practices</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-robot fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">ATS Optimization</h5>
+                <p class="card-text">Learn how to make your resume ATS-friendly and pass automated screening systems.</p>
+                <a href="#ats-tips" class="btn btn-primary btn-sm">Read More</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-key fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Keyword Strategy</h5>
+                <p class="card-text">Discover how to use keywords effectively to match job descriptions.</p>
+                <a href="#keyword-tips" class="btn btn-success btn-sm">Read More</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Industry Specific</h5>
+                <p class="card-text">Get tailored advice for your specific industry and career level.</p>
+                <a href="#industry-tips" class="btn btn-warning btn-sm">Read More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ats-tips" class="card shadow mb-4">
+    <div class="card-body">
+        <h4 class="card-title"><i class="fas fa-robot"></i> ATS Optimization Tips</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-primary">✓ DO:</h6>
+                <ul>
+                    <li>Use standard section headings (Experience, Education, Skills)</li>
+                    <li>Stick to common fonts (Arial, Calibri, Times New Roman)</li>
+                    <li>Save as .docx or .pdf format</li>
+                    <li>Use simple, clean formatting</li>
+                    <li>Include relevant keywords from the job posting</li>
+                    <li>Use standard date formats (MM/YYYY)</li>
+                    <li>Spell out acronyms on first use</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-danger">✗ DON'T:</h6>
+                <ul>
+                    <li>Use tables, text boxes, or columns</li>
+                    <li>Include headers and footers</li>
+                    <li>Use images, logos, or graphics</li>
+                    <li>Use unusual fonts or excessive formatting</li>
+                    <li>Submit as .pages, .odt, or image files</li>
+                    <li>Use special characters or symbols excessively</li>
+                    <li>Include personal information (age, photo, marital status)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="keyword-tips" class="card shadow mb-4">
+    <div class="card-body">
+        <h4 class="card-title"><i class="fas fa-key"></i> Keyword Optimization Strategy</h4>
+        <h6>1. Analyze the Job Description</h6>
+        <p>Identify key skills, qualifications, and requirements mentioned in the posting.</p>
+        
+        <h6>2. Mirror the Language</h6>
+        <p>Use the exact terms and phrases from the job description in your resume.</p>
+        
+        <h6>3. Include Variations</h6>
+        <p>Use both acronyms and full terms (e.g., "AI" and "Artificial Intelligence").</p>
+        
+        <h6>4. Action Verbs</h6>
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Leadership:</strong>
+                <ul class="list-unstyled">
+                    <li>• Led</li>
+                    <li>• Managed</li>
+                    <li>• Directed</li>
+                    <li>• Coordinated</li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <strong>Achievement:</strong>
+                <ul class="list-unstyled">
+                    <li>• Achieved</li>
+                    <li>• Accomplished</li>
+                    <li>• Exceeded</li>
+                    <li>• Delivered</li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <strong>Innovation:</strong>
+                <ul class="list-unstyled">
+                    <li>• Created</li>
+                    <li>• Developed</li>
+                    <li>• Designed</li>
+                    <li>• Launched</li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <strong>Improvement:</strong>
+                <ul class="list-unstyled">
+                    <li>• Improved</li>
+                    <li>• Enhanced</li>
+                    <li>• Optimized</li>
+                    <li>• Streamlined</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="industry-tips" class="card shadow mb-4">
+    <div class="card-body">
+        <h4 class="card-title"><i class="fas fa-star"></i> Industry-Specific Tips</h4>
+        
+        <div class="accordion" id="industryAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#tech">
+                        Technology & Software Development
+                    </button>
+                </h2>
+                <div id="tech" class="accordion-collapse collapse show" data-bs-parent="#industryAccordion">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>List programming languages, frameworks, and tools prominently</li>
+                            <li>Include GitHub profile and portfolio links</li>
+                            <li>Highlight projects with measurable impact</li>
+                            <li>Mention agile/scrum experience if applicable</li>
+                            <li>Show continuous learning (online courses, certifications)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#data">
+                        Data Science & Analytics
+                    </button>
+                </h2>
+                <div id="data" class="accordion-collapse collapse" data-bs-parent="#industryAccordion">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>Emphasize statistical analysis and machine learning skills</li>
+                            <li>Include tools: Python, R, SQL, Tableau, Power BI</li>
+                            <li>Quantify insights and business impact from your analyses</li>
+                            <li>Showcase data visualization examples</li>
+                            <li>Mention certifications (AWS, Google Cloud, etc.)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#business">
+                        Business & Management
+                    </button>
+                </h2>
+                <div id="business" class="accordion-collapse collapse" data-bs-parent="#industryAccordion">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>Focus on leadership and team management experience</li>
+                            <li>Quantify achievements (revenue growth, cost savings, team size)</li>
+                            <li>Highlight strategic planning and execution</li>
+                            <li>Include industry-specific knowledge and expertise</li>
+                            <li>Mention cross-functional collaboration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#creative">
+                        Design & Creative Fields
+                    </button>
+                </h2>
+                <div id="creative" class="accordion-collapse collapse" data-bs-parent="#industryAccordion">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>Include links to portfolio, Behance, or Dribbble</li>
+                            <li>List design tools: Figma, Sketch, Adobe Creative Suite</li>
+                            <li>Highlight user-centered design approach</li>
+                            <li>Mention design thinking and UX research experience</li>
+                            <li>Show awards and recognitions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <h4 class="card-title"><i class="fas fa-check-circle"></i> Final Checklist</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Before Submitting:</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check1">
+                    <label class="form-check-label" for="check1">
+                        Proofread for spelling and grammar errors
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check2">
+                    <label class="form-check-label" for="check2">
+                        Tailored to the specific job posting
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check3">
+                    <label class="form-check-label" for="check3">
+                        Contact information is current and professional
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check4">
+                    <label class="form-check-label" for="check4">
+                        Formatting is consistent throughout
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check5">
+                    <label class="form-check-label" for="check5">
+                        Achievements are quantified with numbers
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check6">
+                    <label class="form-check-label" for="check6">
+                        Relevant keywords are included
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check7">
+                    <label class="form-check-label" for="check7">
+                        File is saved in correct format (.pdf or .docx)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check8">
+                    <label class="form-check-label" for="check8">
+                        Resume is 1-2 pages maximum
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

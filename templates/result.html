@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluation Results - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-chart-bar"></i> Resume Evaluation Results
+        </h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm overall-score-card">
+            <div class="card-body">
+                <h5 class="card-title">Overall Score</h5>
+                <div class="display-1 fw-bold" id="overall-score">{{ evaluation.overall_score|int }}</div>
+                <p class="text-muted">out of 100</p>
+                <canvas id="gaugeChart" style="max-height: 150px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Suggested Job Roles</h5>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    {% for role in suggested_roles %}
+                    <span class="badge bg-success p-2">
+                        <i class="fas fa-briefcase"></i> {{ role }}
+                    </span>
+                    {% endfor %}
+                    {% if suggested_roles|length == 0 %}
+                    <span class="text-muted">No suggested roles available.</span>
+                    {% endif %}
+                </div>
+
+                {% if evaluation.jd_match_percentage and evaluation.jd_match_percentage > 0 %}
+                <hr>
+                <h6>Job Description Match</h6>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-info" role="progressbar" 
+                         style="width: {{ evaluation.jd_match_percentage|round(0) }}%">
+                        {{ evaluation.jd_match_percentage|round(1) }}%
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Score and Charts -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-chart-bar"></i> Vertical Score Breakdown</h5>
+                <canvas id="scoreChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-chart-pie"></i> Category Distribution</h5>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-radar"></i> Performance Radar</h5>
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-grip-horizontal"></i> Horizontal Comparison</h5>
+                <canvas id="horizontalBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Indicators -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-trophy"></i> Performance Level Indicators</h5>
+                <div class="row g-3">
+                    {% set metrics = {
+                        'ATS Compliance': evaluation.ats_score,
+                        'Keyword Optimization': evaluation.keyword_score,
+                        'Grammar Quality': evaluation.grammar_score,
+                        'Structure': evaluation.structure_score,
+                        'Skills Assessment': evaluation.skills_score
+                    } %}
+                    {% for name, score in metrics.items() %}
+                    <div class="col-md-4">
+                        <div class="metric-box">
+                            <div class="metric-label">{{ name }}</div>
+                            <div class="metric-value">{{ score|round(0) }}/100</div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar 
+                                    {% if loop.index == 1 %}bg-success{% elif loop.index == 2 %}bg-info{% elif loop.index == 3 %}bg-warning{% elif loop.index == 4 %}bg-primary{% else %}bg-danger{% endif %}"
+                                    style="width: {{ score }}%">
+                                </div>
+                            </div>
+                            <small class="{% if score >= 80 %}text-success{% elif score >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                {% if score >= 80 %}Excellent{% elif score >= 60 %}Good{% elif score >= 40 %}Average{% else %}Needs Improvement{% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback & Suggestions -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Detailed Feedback</h5>
+                <div class="feedback-content">
+                    {% if evaluation.detailed_feedback %}
+                        {{ evaluation.detailed_feedback | safe | replace('\n', '<br>') }}
+                    {% else %}
+                        <p class="text-muted">No detailed feedback available. See quick suggestions on the right.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Quick Suggestions</h5>
+                <ul class="list-unstyled">
+                    {% for s in suggestions %}
+                        <li class="mb-2"><i class="fas fa-lightbulb text-warning me-2"></i> {{ s }}</li>
+                    {% endfor %}
+                </ul>
+
+                <hr>
+                <h6>Actions</h6>
+                <a href="{{ url_for('upload') }}" class="btn btn-outline-primary mb-2 w-100"><i class="fas fa-upload"></i> Upload another resume</a>
+                <a href="#" class="btn btn-outline-secondary w-100 disabled"><i class="fas fa-download"></i> Export full report (coming soon)</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buttons -->
+<div class="row">
+    <div class="col-12 text-center mb-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg me-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        {% if evaluation.file_path %}
+            <a href="{{ url_for('download_report', eval_id=evaluation.id) }}" class="btn btn-primary btn-lg me-2"><i class="fas fa-file-download"></i> Download Original</a>
+        {% endif %}
+        <!-- NEW: Download PDF Report -->
+        <a href="{{ url_for('download_report_pdf', eval_id=evaluation.id) }}" class="btn btn-success btn-lg"><i class="fas fa-file-pdf"></i> Download PDF Report</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Ensure Chart.js available (user should include Chart.js in base.html)
+    const chartData = {
+        ats: {{ chart_data.ats|round(1) }},
+        keywords: {{ chart_data.keywords|round(1) }},
+        grammar: {{ chart_data.grammar|round(1) }},
+        structure: {{ chart_data.structure|round(1) }},
+        skills: {{ chart_data.skills|round(1) }},
+    };
+    const overallScore = {{ evaluation.overall_score|round(1) }};
+
+    const colors = [
+        'rgba(40, 167, 69, 0.8)',
+        'rgba(23, 162, 184, 0.8)',
+        'rgba(255, 193, 7, 0.85)',
+        'rgba(0, 123, 255, 0.8)',
+        'rgba(220, 53, 69, 0.8)'
+    ];
+
+    // Vertical Bar
+    new Chart(document.getElementById('scoreChart'), {
+        type: 'bar',
+        data: {
+            labels: ['ATS', 'Keywords', 'Grammar', 'Structure', 'Skills'],
+            datasets: [{
+                data: [chartData.ats, chartData.keywords, chartData.grammar, chartData.structure, chartData.skills],
+                backgroundColor: colors,
+                borderColor: colors.map(c => c.replace('0.8','1')),
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+    });
+
+    // Pie
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: ['ATS', 'Keywords', 'Grammar', 'Structure', 'Skills'],
+            datasets: [{ data: [chartData.ats, chartData.keywords, chartData.grammar, chartData.structure, chartData.skills],
+                backgroundColor: colors }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Radar
+    new Chart(document.getElementById('radarChart'), {
+        type: 'radar',
+        data: {
+            labels: ['ATS', 'Keywords', 'Grammar', 'Structure', 'Skills'],
+            datasets: [{ data: [chartData.ats, chartData.keywords, chartData.grammar, chartData.structure, chartData.skills],
+                backgroundColor: 'rgba(102, 126, 234, 0.15)', borderColor: 'rgba(102, 126, 234, 1)', borderWidth: 2 }]
+        },
+        options: { responsive: true, scales: { r: { beginAtZero: true, max: 100 } } }
+    });
+
+    // Gauge (doughnut half)
+    new Chart(document.getElementById('gaugeChart'), {
+        type: 'doughnut',
+        data: { labels: ['Score', 'Remaining'], datasets: [{ data: [overallScore, 100 - overallScore],
+            backgroundColor: [ overallScore >= 80 ? 'rgba(40,167,69,0.85)' :
+                               overallScore >= 60 ? 'rgba(255,193,7,0.85)' :
+                               'rgba(220,53,69,0.85)', 'rgba(200,200,200,0.25)'],
+            borderWidth: 0, circumference: 180, rotation: 270 }] },
+        options: { responsive: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+</script>
+{% endblock %}

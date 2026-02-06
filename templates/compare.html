@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Resumes - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-balance-scale"></i> Compare Your Resumes</h2>
+        <p class="text-muted">Select two resumes from your history to compare side-by-side</p>
+    </div>
+</div>
+
+{% if not eval1 and not eval2 %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title">Select Resumes to Compare</h5>
+                <form method="GET" action="{{ url_for('compare_resumes') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="eval1" class="form-label">First Resume</label>
+                            <select class="form-select" id="eval1" name="eval1" required>
+                                <option value="">Choose...</option>
+                                {% for eval in evaluations %}
+                                <option value="{{ eval.id }}">
+                                    {{ eval.filename.split('_', 2)[2] if '_' in eval.filename else eval.filename }} 
+                                    (Score: {{ eval.overall_score }}) - {{ eval.created_at.split()[0] }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="eval2" class="form-label">Second Resume</label>
+                            <select class="form-select" id="eval2" name="eval2" required>
+                                <option value="">Choose...</option>
+                                {% for eval in evaluations %}
+                                <option value="{{ eval.id }}">
+                                    {{ eval.filename.split('_', 2)[2] if '_' in eval.filename else eval.filename }} 
+                                    (Score: {{ eval.overall_score }}) - {{ eval.created_at.split()[0] }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-balance-scale"></i> Compare
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resume 1</h5>
+                <small>{{ eval1.filename.split('_', 2)[2] if '_' in eval1.filename else eval1.filename }}</small>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="display-4">{{ eval1.overall_score }}</div>
+                    <small class="text-muted">Overall Score</small>
+                </div>
+                <table class="table table-sm">
+                    <tr>
+                        <td>ATS Compliance</td>
+                        <td><strong>{{ eval1.ats_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Keywords</td>
+                        <td><strong>{{ eval1.keyword_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Grammar</td>
+                        <td><strong>{{ eval1.grammar_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Structure</td>
+                        <td><strong>{{ eval1.structure_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Skills</td>
+                        <td><strong>{{ eval1.skills_score }}</strong></td>
+                    </tr>
+                </table>
+                <small class="text-muted">Evaluated: {{ eval1.created_at.split('.')[0] }}</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Resume 2</h5>
+                <small>{{ eval2.filename.split('_', 2)[2] if '_' in eval2.filename else eval2.filename }}</small>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="display-4">{{ eval2.overall_score }}</div>
+                    <small class="text-muted">Overall Score</small>
+                </div>
+                <table class="table table-sm">
+                    <tr>
+                        <td>ATS Compliance</td>
+                        <td><strong>{{ eval2.ats_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Keywords</td>
+                        <td><strong>{{ eval2.keyword_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Grammar</td>
+                        <td><strong>{{ eval2.grammar_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Structure</td>
+                        <td><strong>{{ eval2.structure_score }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Skills</td>
+                        <td><strong>{{ eval2.skills_score }}</strong></td>
+                    </tr>
+                </table>
+                <small class="text-muted">Evaluated: {{ eval2.created_at.split('.')[0] }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title">Comparison Chart</h5>
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title">Score Differences</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Resume 1</th>
+                            <th>Resume 2</th>
+                            <th>Difference</th>
+                            <th>Winner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Overall Score</td>
+                            <td>{{ eval1.overall_score }}</td>
+                            <td>{{ eval2.overall_score }}</td>
+                            <td>{{ '%.1f'|format(eval2.overall_score - eval1.overall_score) }}</td>
+                            <td>
+                                {% if eval1.overall_score > eval2.overall_score %}
+                                <span class="badge bg-primary">Resume 1</span>
+                                {% elif eval2.overall_score > eval1.overall_score %}
+                                <span class="badge bg-success">Resume 2</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Tie</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ATS Compliance</td>
+                            <td>{{ eval1.ats_score }}</td>
+                            <td>{{ eval2.ats_score }}</td>
+                            <td>{{ '%.1f'|format(eval2.ats_score - eval1.ats_score) }}</td>
+                            <td>
+                                {% if eval1.ats_score > eval2.ats_score %}
+                                <span class="badge bg-primary">Resume 1</span>
+                                {% elif eval2.ats_score > eval1.ats_score %}
+                                <span class="badge bg-success">Resume 2</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Tie</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Keywords</td>
+                            <td>{{ eval1.keyword_score }}</td>
+                            <td>{{ eval2.keyword_score }}</td>
+                            <td>{{ '%.1f'|format(eval2.keyword_score - eval1.keyword_score) }}</td>
+                            <td>
+                                {% if eval1.keyword_score > eval2.keyword_score %}
+                                <span class="badge bg-primary">Resume 1</span>
+                                {% elif eval2.keyword_score > eval1.keyword_score %}
+                                <span class="badge bg-success">Resume 2</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Tie</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('compare_resumes') }}" class="btn btn-secondary">
+            <i class="fas fa-sync"></i> Compare Different Resumes
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+    const compCtx = document.getElementById('comparisonChart').getContext('2d');
+    new Chart(compCtx, {
+        type: 'radar',
+        data: {
+            labels: ['ATS', 'Keywords', 'Grammar', 'Structure', 'Skills'],
+            datasets: [
+                {
+                    label: 'Resume 1',
+                    data: [{{ eval1.ats_score }}, {{ eval1.keyword_score }}, {{ eval1.grammar_score }}, 
+                           {{ eval1.structure_score }}, {{ eval1.skills_score }}],
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    pointBackgroundColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Resume 2',
+                    data: [{{ eval2.ats_score }}, {{ eval2.keyword_score }}, {{ eval2.grammar_score }}, 
+                           {{ eval2.structure_score }}, {{ eval2.skills_score }}],
+                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    pointBackgroundColor: 'rgba(25, 135, 84, 1)',
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

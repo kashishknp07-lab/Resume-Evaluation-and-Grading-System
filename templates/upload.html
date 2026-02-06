@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resume - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-4">
+                    <i class="fas fa-upload"></i> Upload Your Resume
+                </h2>
+                <p class="text-center text-muted mb-4">
+                    Upload your resume and optionally add a job description for better matching
+                </p>
+                
+                <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="resume" class="form-label fw-bold">Resume File *</label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.docx" required>
+                        <small class="text-muted">Supported formats: PDF, DOCX (Max 16MB)</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="job_description" class="form-label fw-bold">Job Description (Optional)</label>
+                        <textarea class="form-control" id="job_description" name="job_description" rows="6" 
+                                  placeholder="Paste the job description here to get a match percentage..."></textarea>
+                        <small class="text-muted">Adding a job description helps calculate how well your resume matches</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-magic"></i> Evaluate Resume
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle"></i> What We Analyze</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> ATS Compliance</li>
+                    <li><i class="fas fa-check text-success"></i> Keyword Optimization</li>
+                    <li><i class="fas fa-check text-success"></i> Grammar & Language Quality</li>
+                    <li><i class="fas fa-check text-success"></i> Resume Structure</li>
+                    <li><i class="fas fa-check text-success"></i> Skills Assessment</li>
+                    <li><i class="fas fa-check text-success"></i> Job Description Match (if provided)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

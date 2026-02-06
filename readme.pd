@@ -1,0 +1,10 @@
+Open this folder cmd
+python -m venv venv
+venv\scripts\activate
+First of all run requirements.txt file
+pip install -r requirements.txt
+
+Run db file
+Step 1 => python db.py 
+Step 2 => python app.py
+

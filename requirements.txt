@@ -1,0 +1,14 @@
+# Flask and Flask-Login
+pip install Flask Flask-Login
+
+# Werkzeug (for security and file utils)
+pip install Werkzeug
+
+# MongoDB client for Python
+pip install pymongo
+
+# BSON handling (usually comes with pymongo, but safe to install)
+pip install bson
+
+# ReportLab for PDF generation
+pip install reportlab

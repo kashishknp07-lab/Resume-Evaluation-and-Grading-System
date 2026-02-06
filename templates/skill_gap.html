@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Gap Analyzer - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Skill Gap Analyzer</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('skill_gap') }}">
+                <div class="mb-3">
+                    <label class="form-label">Job Description</label>
+                    <textarea class="form-control" name="job_description" rows="8" placeholder="Paste the job description here..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Your Skills (comma or newline separated)</label>
+                    <textarea class="form-control" name="skills" rows="3" placeholder="Python, Flask, SQL, Communication"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Analyze Gap</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary ms-2">Back to Dashboard</a>
+            </form>
+        </div>
+    </div>
+
+    {% if results %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Extracted JD Keywords</h5>
+                    {% if results.jd_keywords %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for kw in results.jd_keywords %}
+                                <span class="badge bg-info text-dark">{{ kw }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No keywords found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Your Provided Skills</h5>
+                    {% if results.user_skills %}
+                        <div>
+                            {% for s in results.user_skills %}
+                                <span class="badge bg-secondary me-1">{{ s }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">You didn't enter any skills.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Matched Keywords</h5>
+                    {% if results.present %}
+                        <div>
+                            {% for p in results.present %}
+                                <span class="badge bg-success me-1">{{ p }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-warning">No matches found between JD and your skills.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Missing / Recommended Keywords</h5>
+                    {% if results.missing %}
+                        <ol>
+                            {% for m in results.missing %}
+                                <li><strong>{{ m }}</strong></li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p class="text-success">Great — no missing keywords found!</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Suggested Bullets / Additions</h5>
+                    {% if results.suggestions %}
+                        <ul>
+                            {% for s in results.suggestions %}
+                                <li><strong>{{ s.keyword }}</strong>: {{ s.suggestion }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No suggestions available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <a href="#" class="btn btn-outline-primary btn-sm" onclick="copySuggestions()">Copy Suggestions</a>
+                    <a href="{{ url_for('generate_resume') }}" class="btn btn-outline-success btn-sm ms-2">Use Generator</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copySuggestions() {
+    let text = '';
+    const items = document.querySelectorAll('.card .card-body ul li');
+    if (items.length === 0) {
+        alert('No suggestions to copy.');
+        return;
+    }
+    items.forEach(li => {
+        text += li.innerText + '\n';
+    });
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Suggestions copied to clipboard!');
+    }).catch(() => {
+        alert('Copy failed. Please select and copy manually.');
+    });
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Resume Evaluator AI{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center py-5">
+    <h1 class="display-3 fw-bold mb-4">AI-Powered Resume Evaluation System</h1>
+    <p class="lead mb-5">Get instant feedback on your resume with our advanced AI technology</p>
+    
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="feature-card p-4">
+                <i class="fas fa-robot fa-3x text-primary mb-3"></i>
+                <h4>AI Analysis</h4>
+                <p>Advanced NLP algorithms evaluate your resume's content and structure</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card p-4">
+                <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                <h4>ATS Compliance</h4>
+                <p>Ensure your resume passes Applicant Tracking Systems</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card p-4">
+                <i class="fas fa-lightbulb fa-3x text-warning mb-3"></i>
+                <h4>Smart Suggestions</h4>
+                <p>Get personalized job role recommendations based on your skills</p>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.is_authenticated %}
+    <div class="action-buttons">
+        <!-- 🔧 'generate' को 'upload' से बदल दिया गया -->
+        <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg me-3">
+            <i class="fas fa-upload"></i> Upload & Evaluate Resume
+        </a>
+        <a href="{{ url_for('upload') }}" class="btn btn-success btn-lg">
+            <i class="fas fa-magic"></i> Generate New Resume
+        </a>
+    </div>
+    {% else %}
+    <div class="action-buttons">
+        <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg me-3">
+            <i class="fas fa-user-plus"></i> Get Started - Sign Up
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="features-section py-5">
+    <h2 class="text-center mb-5">How It Works</h2>
+    <div class="row">
+        <div class="col-md-3 text-center mb-4">
+            <div class="step-number">1</div>
+            <h5>Upload Resume</h5>
+            <p>Upload your resume in PDF or DOCX format</p>
+        </div>
+        <div class="col-md-3 text-center mb-4">
+            <div class="step-number">2</div>
+            <h5>AI Analysis</h5>
+            <p>Our AI analyzes your resume comprehensively</p>
+        </div>
+        <div class="col-md-3 text-center mb-4">
+            <div class="step-number">3</div>
+            <h5>Get Results</h5>
+            <p>View detailed scores and feedback</p>
+        </div>
+        <div class="col-md-3 text-center mb-4">
+            <div class="step-number">4</div>
+            <h5>Improve</h5>
+            <p>Download report and enhance your resume</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

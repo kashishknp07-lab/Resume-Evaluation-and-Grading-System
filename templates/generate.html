@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Generate Resume - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Generate AI-Based Resume</h2>
+
+    <form method="POST" action="{{ url_for('generate_resume') }}">
+        <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="name" required placeholder="Jane Doe">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" required placeholder="jane.doe@example.com">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control" name="phone" required placeholder="+91-98765-43210">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Skills <small class="text-muted">(comma separated or newline)</small></label>
+            <textarea class="form-control" name="skills" rows="3" required placeholder="Python, Flask, SQL, Communication"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Experience <small class="text-muted">(one role per line — include title, company, dates, and 1–2 bullets)</small></label>
+            <textarea class="form-control" name="experience" rows="5" required placeholder="Senior Software Engineer at XYZ Corp (2021-Present)
+- Built REST APIs using Flask and improved performance by 30%
+- Led a small team of 3 engineers"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Education <small class="text-muted">(one item per line)</small></label>
+            <textarea class="form-control" name="education" rows="3" required placeholder="B.Tech Computer Science — ABC University (2014-2018)"></textarea>
+        </div>
+
+        <hr>
+        <h5>Custom Sections (Add your own)</h5>
+        <div id="custom-sections"></div>
+
+        <div class="mt-2 mb-4">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="add-section-btn">+ Add Section</button>
+            <small class="text-muted ms-2">You can add sections like "Projects", "Certifications", "Volunteer", etc.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Generate Resume</button>
+    </form>
+
+    {% if generated_resume %}
+    <div class="mt-4 p-3 border rounded bg-light">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <h4 class="mb-0">Generated Resume</h4>
+            <div>
+                {% if generated_filename %}
+                    <a href="{{ url_for('download_generated', filename=generated_filename) }}" class="btn btn-sm btn-outline-success me-2">
+                        <i class="fas fa-download"></i> Download (.txt)
+                    </a>
+                {% endif %}
+                <button class="btn btn-sm btn-outline-secondary" onclick="copyResume()">Copy</button>
+            </div>
+        </div>
+
+        <pre id="generatedText" style="white-space:pre-wrap; font-family:inherit;">{{ generated_resume }}</pre>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let sectionCount = 0;
+
+function createSectionHTML(idx, title = '', detail = '') {
+    return `
+    <div class="card mb-3 custom-section" data-idx="${idx}">
+        <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+                <strong>Custom Section</strong>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="moveUp(${idx})">↑</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="moveDown(${idx})">↓</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSection(${idx})">Remove</button>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Section Title</label>
+                <input type="text" name="custom_title[]" class="form-control section-title" value="${escapeHtml(title)}" placeholder="e.g. Projects, Certifications">
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Section Details <small class="text-muted">(one item per line)</small></label>
+                <textarea name="custom_detail[]" class="form-control section-detail" rows="3" placeholder="Detail line 1\nDetail line 2">${escapeHtml(detail)}</textarea>
+            </div>
+        </div>
+    </div>`;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+}
+
+function addSection(title='', detail='') {
+    const idx = sectionCount++;
+    const container = document.getElementById('custom-sections');
+    const div = document.createElement('div');
+    div.innerHTML = createSectionHTML(idx, title, detail);
+    container.appendChild(div);
+    updateSectionDataAttributes();
+}
+
+function removeSection(idx) {
+    const el = document.querySelector(`.custom-section[data-idx="${idx}"]`);
+    if (el) el.remove();
+    updateSectionDataAttributes();
+}
+
+function moveUp(idx) {
+    const el = document.querySelector(`.custom-section[data-idx="${idx}"]`);
+    if (!el) return;
+    const prev = el.previousElementSibling;
+    if (prev) el.parentNode.insertBefore(el, prev);
+    updateSectionDataAttributes();
+}
+
+function moveDown(idx) {
+    const el = document.querySelector(`.custom-section[data-idx="${idx}"]`);
+    if (!el) return;
+    const next = el.nextElementSibling;
+    if (next) el.parentNode.insertBefore(next, el);
+    updateSectionDataAttributes();
+}
+
+function updateSectionDataAttributes() {
+    // reassign sequential idx for consistent up/down behavior
+    const list = document.querySelectorAll('#custom-sections > div > .custom-section');
+    list.forEach((wrapper, i) => {
+        wrapper.setAttribute('data-idx', i);
+        // update onclick handlers to new idx
+        const upBtn = wrapper.querySelector('button[onclick^="moveUp"]');
+        const downBtn = wrapper.querySelector('button[onclick^="moveDown"]');
+        const remBtn = wrapper.querySelector('button[onclick^="removeSection"]');
+        if (upBtn) upBtn.setAttribute('onclick', `moveUp(${i})`);
+        if (downBtn) downBtn.setAttribute('onclick', `moveDown(${i})`);
+        if (remBtn) remBtn.setAttribute('onclick', `removeSection(${i})`);
+    });
+    sectionCount = document.querySelectorAll('#custom-sections > div > .custom-section').length;
+}
+
+document.getElementById('add-section-btn').addEventListener('click', function() {
+    addSection();
+});
+
+// allow initial single empty section for convenience
+if (document.getElementById('custom-sections').children.length === 0) {
+    addSection();
+}
+
+function copyResume() {
+    const pre = document.getElementById('generatedText');
+    if (!pre) return;
+    const text = pre.innerText || pre.textContent;
+    if (!text) {
+        alert('No resume to copy.');
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Generated resume copied to clipboard!');
+    }).catch(err => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+            document.execCommand('copy');
+            alert('Generated resume copied to clipboard!');
+        } catch (e) {
+            alert('Copy failed. You can manually select the text and copy.');
+        }
+        document.body.removeChild(ta);
+    });
+}
+</script>
+{% endblock %}

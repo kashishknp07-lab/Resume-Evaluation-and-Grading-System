@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings - Resume Evaluator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-cog"></i> Account Settings</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-user"></i> Profile Information</h5>
+                <form method="POST" action="{{ url_for('update_profile') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" value="{{ current_user.username }}" disabled>
+                        <small class="text-muted">Username cannot be changed</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user_data.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user_data.full_name or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ user_data.phone or '' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-lock"></i> Change Password</h5>
+                <form method="POST" action="{{ url_for('change_password') }}">
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-bell"></i> Preferences</h5>
+                <form method="POST" action="{{ url_for('update_preferences') }}">
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="email_notifications" name="email_notifications" 
+                               {% if preferences.email_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="email_notifications">
+                            Email Notifications
+                            <small class="d-block text-muted">Receive email notifications for evaluation results</small>
+                        </label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="weekly_tips" name="weekly_tips"
+                               {% if preferences.weekly_tips %}checked{% endif %}>
+                        <label class="form-check-label" for="weekly_tips">
+                            Weekly Tips
+                            <small class="d-block text-muted">Receive weekly resume improvement tips</small>
+                        </label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="dark_mode" name="dark_mode"
+                               {% if preferences.dark_mode %}checked{% endif %}>
+                        <label class="form-check-label" for="dark_mode">
+                            Dark Mode <span class="badge bg-secondary">Coming Soon</span>
+                            <small class="d-block text-muted">Enable dark theme for the interface</small>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Preferences
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-chart-line"></i> Account Statistics</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-calendar text-primary"></i>
+                        <strong>Member Since:</strong> {{ user_data.created_at.split()[0] if user_data.created_at else 'N/A' }}
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-file text-success"></i>
+                        <strong>Total Evaluations:</strong> {{ evaluation_count }}
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-trophy text-warning"></i>
+                        <strong>Best Score:</strong> {{ best_score if best_score else 'N/A' }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

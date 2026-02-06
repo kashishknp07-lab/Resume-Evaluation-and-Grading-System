@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Logs
+*.log
+.pythonlibs/
+
+# Environment variables (keep .env if using python-dotenv)
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# uv/poetry
+.pythonlibs/
+poetry.lock
+uv.lock
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
